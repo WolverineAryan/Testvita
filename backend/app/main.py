@@ -103,8 +103,9 @@ async def global_exception_handler(request: Request, exc: Exception):
         }
     )
 
-# Include API Router
+# Include API Router (both with /api/v1 and root prefix for resilience)
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix="")
 
 @app.get("/")
 async def root():
