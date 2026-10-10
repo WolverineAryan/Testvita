@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+  }
+
+  body {
+    @apply bg-black text-neutral-100 font-sans antialiased selection:bg-white selection:text-black;
+  }
+}
+
+/* Minimalist technical monochrome scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+.glass-panel {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glow-brand {
+  box-shadow: 0 0 25px -5px rgba(255, 255, 255, 0.15);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 25px -5px rgba(255, 255, 255, 0.12);
+}
