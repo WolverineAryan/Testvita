@@ -5,6 +5,12 @@ from app.main import app
 
 @pytest.mark.asyncio
 async def test_health_and_auth_flow():
+    from app.database.session import engine, Base
+    from app.seeds.seed_data import seed_database_if_empty
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    await seed_database_if_empty()
+
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         # 1. Health check
         res = await client.get("/health")

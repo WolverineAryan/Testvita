@@ -6,21 +6,35 @@ from app.config.settings import settings
 
 Base = declarative_base()
 
+def normalize_db_url(url: str) -> str:
+    if not url:
+        return "sqlite+aiosqlite:///./codevita.db"
+    url = url.strip()
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    if "sslmode=" in url:
+        url = url.replace("sslmode=", "ssl=")
+    return url
+
+db_url = normalize_db_url(settings.DATABASE_URL)
+
 # SQLite needs connect_args for multithreading and concurrency
 connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+if db_url.startswith("sqlite"):
     connect_args["check_same_thread"] = False
     connect_args["timeout"] = 60.0
 
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=False,
     future=True,
-    connect_args=connect_args if settings.DATABASE_URL.startswith("sqlite") else {},
+    connect_args=connect_args if db_url.startswith("sqlite") else {},
 )
 
 # Enable WAL (Write-Ahead Logging) and high busy timeout on SQLite to prevent "database is locked" errors
-if settings.DATABASE_URL.startswith("sqlite"):
+if db_url.startswith("sqlite"):
     @event.listens_for(engine.sync_engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
