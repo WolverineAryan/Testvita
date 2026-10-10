@@ -1,9 +1,17 @@
 import axios from 'axios';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+// Automatically normalize URL so both 'https://app.onrender.com' and 'https://app.onrender.com/api/v1' work
+function getBaseApiUrl(): string {
+  let raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+  raw = raw.trim().replace(/\/+$/, '');
+  if (!raw.endsWith('/api/v1')) {
+    raw = `${raw}/api/v1`;
+  }
+  return raw;
+}
 
 export const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: getBaseApiUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
